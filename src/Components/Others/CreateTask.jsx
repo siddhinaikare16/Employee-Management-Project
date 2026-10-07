@@ -10,31 +10,44 @@ const CreateTask = () => {
   const [assignTo , setAssignTo] = useState('')
   const [category , setCategory] = useState('')
 
-  const [newtask , setNewTask] = useState({})
-  
+ 
   const submitHandler = (e) =>{
     e.preventDefault()
     console.log("Task Created");
     
-    setNewTask({taskTitle,taskDescription,taskDate,category,assignTo,active:false , newTask:true , completed : false , failed : false})
-
+    const newtask = {
+      taskTitle,taskDescription,taskDate,category,assignTo,active:false , newTask:true , completed : false , failed : false
+    }
     
     const data = userData.employees
     console.log(data);
     
     
-    data.forEach(elem => {
+  const updatedEmployees = data.map(elem => {
       if (assignTo == elem.firstName) {
-          elem.tasks.push(newtask)
-          elem.taskCounts.newTask = elem.taskCounts.newTask + 1
-          console.log(elem);   
+          const updatedTasks = [...elem.tasks,newtask]
+          const updatedEmployee = {
+            ...elem,
+            tasks:updatedTasks,
+            taskCounts:{
+              ...elem.taskCounts,
+              newTask : elem.taskCounts.newTask+1
+            }
+          }
+          console.log(updatedTasks);
+      return updatedEmployee     
       }
-    });
+    return elem 
+    })
 
-    // localStorage.setItem('employees',JSON.stringify(data))
-    console.log(data);
+
+    localStorage.setItem('employees',JSON.stringify(updatedEmployees))
     
-    // setUserData(data)
+    
+    setUserData({
+    ...userData,
+    employees: updatedEmployees
+})
 
 
     setAssignTo('')
